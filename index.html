@@ -346,10 +346,7 @@
     const idealPreview = document.getElementById('idealPreview');
     const entryDate = document.getElementById('entryDate');
     const energy = document.getElementById('energy');
-    const done = document.getElementById('done');
-    const recovery = document.getElementById('recovery');
     const notice = document.getElementById('notice');
-    const nextAction = document.getElementById('nextAction');
     const historyEl = document.getElementById('history');
     const eventEmotionList = document.getElementById('eventEmotionList');
     const mentorBox = document.getElementById('mentorBox');
@@ -483,10 +480,7 @@
     function clearForm() {
       entryDate.value = todayStr();
       energy.value = '';
-      done.value = '';
-      recovery.value = '';
-      notice.value = '';
-      nextAction.value = '';
+      if (notice) notice.value = '';
       mentorBox.style.display = 'none';
       reportBox.style.display = 'none';
       clearEventBlocks();
