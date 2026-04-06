@@ -339,6 +339,7 @@
       <div class="actions">
         <button class="secondary" id="generateReportBtn">📋 AI報告用テキストを作成</button>
         <button class="ghost" id="clearFormBtn">入力をクリア</button>
+        <span id="autoSaveMsg" style="font-size:13px; color:#2563eb; opacity:0; transition:opacity 0.5s; align-self:center;">✅ 自動保存しました</span>
       </div>
 
       <div class="mentor" id="mentorBox" style="display:none;">
@@ -631,11 +632,86 @@
       reportBox.style.display = 'none';
     }
 
+    // ---- 自動保存・復元 ----
+    const STORAGE_DRAFT = 'hsp_journal_draft_v1';
+
+    function saveDraft() {
+      const events = eventBlocks.map(block => ({
+        fact: block.querySelector('.ev-fact').value,
+        emotion: block.querySelector('.ev-emotion').value
+      }));
+      const draft = {
+        date: entryDate.value,
+        energy: energy.value,
+        events,
+        done: done.value,
+        recovery: recovery.value,
+        notice: notice.value,
+        nextAction: nextAction.value
+      };
+      localStorage.setItem(STORAGE_DRAFT, JSON.stringify(draft));
+      showAutoSaveMsg();
+    }
+
+    let autoSaveTimer = null;
+    function scheduleSave() {
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(saveDraft, 800);
+    }
+
+    function showAutoSaveMsg() {
+      const msg = document.getElementById('autoSaveMsg');
+      if (!msg) return;
+      msg.style.opacity = '1';
+      setTimeout(() => msg.style.opacity = '0', 1500);
+    }
+
+    function loadDraft() {
+      try {
+        const raw = localStorage.getItem(STORAGE_DRAFT);
+        if (!raw) return false;
+        const draft = JSON.parse(raw);
+        // 日付が今日と違う場合は復元しない
+        if (draft.date && draft.date !== todayStr()) {
+          localStorage.removeItem(STORAGE_DRAFT);
+          return false;
+        }
+        if (draft.date) entryDate.value = draft.date;
+        if (draft.energy) energy.value = draft.energy;
+        done.value = draft.done || '';
+        recovery.value = draft.recovery || '';
+        notice.value = draft.notice || '';
+        nextAction.value = draft.nextAction || '';
+        // 出来事・感情ブロックを復元
+        if (draft.events && draft.events.length) {
+          eventEmotionList.innerHTML = '';
+          eventBlocks = [];
+          draft.events.forEach(e => addEventBlock(e.fact, e.emotion));
+        }
+        return true;
+      } catch { return false; }
+    }
+
+    function attachDraftListeners() {
+      [entryDate, energy, done, recovery, notice, nextAction].forEach(el => {
+        el.addEventListener('input', scheduleSave);
+        el.addEventListener('change', scheduleSave);
+      });
+      // 動的に追加されるテキストエリアはeventEmotionListで監視
+      eventEmotionList.addEventListener('input', scheduleSave);
+    }
+
     // ---- イベント登録 ----
     document.getElementById('saveIdealBtn').addEventListener('click', saveIdeal);
-    document.getElementById('addEventBtn').addEventListener('click', () => addEventBlock());
+    document.getElementById('addEventBtn').addEventListener('click', () => {
+      addEventBlock();
+      scheduleSave();
+    });
     document.getElementById('generateReportBtn').addEventListener('click', generateReport);
-    document.getElementById('clearFormBtn').addEventListener('click', clearForm);
+    document.getElementById('clearFormBtn').addEventListener('click', () => {
+      clearForm();
+      localStorage.removeItem(STORAGE_DRAFT);
+    });
     document.getElementById('copyReportBtn').addEventListener('click', () => {
       reportText.select();
       navigator.clipboard.writeText(reportText.value).then(() => {
@@ -648,7 +724,9 @@
     // ---- 初期化 ----
     entryDate.value = todayStr();
     loadIdeal();
-    addEventBlock();
+    const restored = loadDraft();
+    if (!restored) addEventBlock();
+    attachDraftListeners();
     renderHistory();
   </script>
 </body>
