@@ -633,20 +633,9 @@
 
     // ---- イベント登録 ----
     document.getElementById('saveIdealBtn').addEventListener('click', saveIdeal);
-    document.getElementById('saveEntryBtn').addEventListener('click', saveEntry);
     document.getElementById('addEventBtn').addEventListener('click', () => addEventBlock());
-    document.getElementById('mentorBtn').addEventListener('click', () => {
-      generateMentorComment({
-        date: entryDate.value, energy: energy.value,
-        events: getEventEmotionPairs(),
-        done: done.value, recovery: recovery.value,
-        notice: notice.value, nextAction: nextAction.value
-      });
-    });
     document.getElementById('generateReportBtn').addEventListener('click', generateReport);
     document.getElementById('clearFormBtn').addEventListener('click', clearForm);
-    document.getElementById('exportBtn').addEventListener('click', exportJson);
-    document.getElementById('deleteAllBtn').addEventListener('click', deleteAll);
     document.getElementById('copyReportBtn').addEventListener('click', () => {
       reportText.select();
       navigator.clipboard.writeText(reportText.value).then(() => {
