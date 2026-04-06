@@ -326,8 +326,18 @@
         <textarea id="reportText" style="min-height:200px; font-size:14px; line-height:1.8;" readonly></textarea>
         <div class="actions">
           <button class="secondary" id="copyReportBtn">コピーする</button>
+          <a id="copyToClaudeBtn" href="https://claude.ai" target="_blank" style="
+            display:inline-block;
+            background:#2563eb;
+            color:white;
+            font-weight:700;
+            border-radius:12px;
+            padding:12px 16px;
+            text-decoration:none;
+            font-size:15px;
+          ">テキストをコピーしてClaudeに貼り付ける →</a>
         </div>
-        <p id="copyMsg" style="color:#2563eb; font-size:13px; display:none; margin-top:8px;">✅ コピーしました！</p>
+        <p id="copyMsg" style="color:#2563eb; font-size:13px; display:none; margin-top:8px;">✅ コピーしました！Claudeのページが開きます。そのまま貼り付けてください。</p>
       </div>
 
       <p class="footer-note">
@@ -670,11 +680,22 @@
       localStorage.removeItem(STORAGE_DRAFT);
     });
     document.getElementById('copyReportBtn').addEventListener('click', () => {
-      reportText.select();
       navigator.clipboard.writeText(reportText.value).then(() => {
         const msg = document.getElementById('copyMsg');
         msg.style.display = 'block';
-        setTimeout(() => msg.style.display = 'none', 2000);
+        setTimeout(() => msg.style.display = 'none', 3000);
+      });
+    });
+
+    document.getElementById('copyToClaudeBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      navigator.clipboard.writeText(reportText.value).then(() => {
+        const msg = document.getElementById('copyMsg');
+        msg.style.display = 'block';
+        setTimeout(() => {
+          msg.style.display = 'none';
+          window.open('https://claude.ai', '_blank');
+        }, 800);
       });
     });
 
