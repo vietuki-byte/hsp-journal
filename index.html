@@ -123,20 +123,9 @@
       <h2>2. 報告事項</h2>
       <p class="sub">1日1回、1〜3分で入力する想定です。</p>
 
-      <div class="row-two">
-        <div>
-          <label for="entryDate">日付</label>
-          <input type="date" id="entryDate" />
-        </div>
-        <div>
-          <label for="energy">今日の消耗度</label>
-          <select id="energy">
-            <option value="">選択してください</option>
-            <option>低い（比較的楽）</option>
-            <option>普通</option>
-            <option>高い（かなり疲れた）</option>
-          </select>
-        </div>
+      <div class="row">
+        <label for="entryDate">日付</label>
+        <input type="date" id="entryDate" />
       </div>
 
       <div id="eventEmotionList"></div>
@@ -179,7 +168,6 @@
     const idealSelf        = document.getElementById('idealSelf');
     const idealPreview     = document.getElementById('idealPreview');
     const entryDate        = document.getElementById('entryDate');
-    const energy           = document.getElementById('energy');
     const notice           = document.getElementById('notice');
     const eventEmotionList = document.getElementById('eventEmotionList');
     const reportBox        = document.getElementById('reportBox');
@@ -270,7 +258,6 @@
       });
       localStorage.setItem(STORAGE_DRAFT, JSON.stringify({
         date:   entryDate.value,
-        energy: energy.value,
         events: events,
         notice: notice.value
       }));
@@ -288,7 +275,6 @@
           return false;
         }
         if (draft.date)   entryDate.value = draft.date;
-        if (draft.energy) energy.value    = draft.energy;
         notice.value = draft.notice || '';
         if (draft.events && draft.events.length) {
           eventEmotionList.innerHTML = '';
@@ -301,7 +287,6 @@
 
     function clearForm() {
       entryDate.value = todayStr();
-      energy.value    = '';
       notice.value    = '';
       reportBox.style.display = 'none';
       clearEventBlocks();
@@ -310,12 +295,10 @@
 
     function generateReport() {
       const date      = entryDate.value || todayStr();
-      const ev        = energy.value    || '未選択';
       const events    = getEventEmotionPairs();
       const noticeVal = notice.value.trim();
       var lines = [];
       lines.push('【日次報告】' + date);
-      lines.push('消耗度：' + ev);
       lines.push('');
       if (events.length) {
         lines.push('■ 出来事と感情');
@@ -368,8 +351,6 @@
 
     entryDate.addEventListener('input',  scheduleSave);
     entryDate.addEventListener('change', scheduleSave);
-    energy.addEventListener('input',     scheduleSave);
-    energy.addEventListener('change',    scheduleSave);
     notice.addEventListener('input',     scheduleSave);
 
     entryDate.value = todayStr();
