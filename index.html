@@ -149,9 +149,8 @@
         <textarea id="reportText" readonly></textarea>
         <div class="actions" style="margin-top:12px;">
           <button class="btn-secondary" id="copyReportBtn">コピーする</button>
-          <button class="btn-claude" id="copyToClaudeBtn">テキストをコピーしてClaudeに貼り付ける →</button>
         </div>
-        <p class="success-msg" id="copyMsg">✅ コピーしました！Claudeのページが開きます。そのまま貼り付けてください。</p>
+        <p class="success-msg" id="copyMsg">✅ コピーしました！</p>
       </div>
 
       <p class="footer-note">
@@ -343,12 +342,6 @@
 
     document.getElementById('copyReportBtn').addEventListener('click', function() {
       copyText();
-    });
-
-    document.getElementById('copyToClaudeBtn').addEventListener('click', function() {
-      copyText(function() {
-        window.open('https://claude.ai', '_blank');
-      });
     });
 
     entryDate.addEventListener('input',  scheduleSave);
